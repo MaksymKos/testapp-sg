@@ -1,22 +1,21 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import { getDocs, collection, query, where, updateDoc, addDoc, limit } from "firebase/firestore"
 import { v4 as uuid } from 'uuid'
-import db from '../../services/db'
+import db from '../db'
 import { User } from '../../types/user'
+import { errorMessages, tokenName } from '../../constants'
 
 const collection_name = "users"
 const userColection = collection(db, collection_name)
 
 export const getCurrentUser = createAsyncThunk("user/getCurrentUser", async (token: string | null) => {
-  if (!token) throw new Error('no token')
+  if (!token) throw new Error(errorMessages.unauthenticated)
 
-  const q = query(
+  const { docs: [user] } = await getDocs(query(
     userColection,
-    where('token', '==', token),
-  )
-
-  const { docs: [user] } = await getDocs(q)
-  if (!user) throw new Error('no user')
+    where(tokenName, '==', token),
+  ))
+  if (!user) throw new Error(errorMessages.unauthenticated)
 
   const resultUser = user.data() as User
   resultUser.ref = user.ref.path
@@ -27,14 +26,12 @@ export const getCurrentUser = createAsyncThunk("user/getCurrentUser", async (tok
 export const loginUser = createAsyncThunk(
   "user/loginUser",
   async ({ email, password }: { email: string, password: string }) => {
-    const q = query(
+    const { docs: [user] } = await getDocs(query(
       userColection,
       where('email', '==', email),
       where('password', '==', password),
-    )
-
-    const { docs: [user] } = await getDocs(q)
-    if (!user) throw new Error('User doesn`t exist')
+    ))
+    if (!user) throw new Error(errorMessages.invalidCredentials)
 
     const token = uuid()
     await updateDoc(user.ref, { token })
@@ -49,16 +46,12 @@ export const loginUser = createAsyncThunk(
 export const createUser = createAsyncThunk(
   "user/createUser",
   async (newUser: Omit<User, "token" | "ref">) => {
-    const q = query(
+    const { docs: [existingUser] } = await getDocs(query(
       userColection,
       where("email", "==", newUser.email),
       limit(1)
-    )
-
-    const {
-      docs: [existingUser],
-    } = await getDocs(q)
-    if (existingUser) throw new Error("User already exist")
+    ))
+    if (existingUser) throw new Error(errorMessages.userAlreadyExists)
 
     const user = {
       ...newUser,

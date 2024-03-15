@@ -1,5 +1,6 @@
 {
   "name": "my-app",
+  "homepage": "https://maksymkos.github.io/testapp-sg",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -35,6 +36,8 @@
   "scripts": {
     "dev": "react-scripts start",
     "start": "serve -s build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -58,6 +61,7 @@
     ]
   },
   "devDependencies": {
+    "gh-pages": "^6.1.1",
     "serve": "^14.2.1"
   }
 }

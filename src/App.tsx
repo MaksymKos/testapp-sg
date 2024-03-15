@@ -5,10 +5,10 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { useAppDispatch } from './types/hooks'
 import { getCurrentUser } from './api/user/actions'
-import { CircularProgress } from '@mui/material'
+import { tokenName } from './constants'
 
 function App() {
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem(tokenName)
   const dispatch = useAppDispatch()
   const [userLoading, setUserLoading] = useState(true)
 
@@ -20,7 +20,6 @@ function App() {
     })
   }, [token])
 
-  // if (userLoading) return <CircularProgress size="lg" value={30} />
   if (userLoading) return <></>
 
   return (

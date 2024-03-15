@@ -1,9 +1,11 @@
-import { useState, ChangeEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Container, TextField, InputAdornment, Typography, Box, IconButton, Button } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { loginUser } from '../api/user/actions';
-import { useAppDispatch } from '../types/hooks';
+import { useState, ChangeEvent } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Container, TextField, InputAdornment, Typography, Box, IconButton, Button } from '@mui/material'
+import { Visibility, VisibilityOff } from '@mui/icons-material'
+import { loginUser } from '../api/user/actions'
+import { useAppDispatch } from '../types/hooks'
+import { errorMessages, routes } from '../constants'
+import { toast } from 'react-toastify'
 
 type inputsType = {
   email: string,
@@ -11,52 +13,52 @@ type inputsType = {
 }
 
 const LoginPage = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const [showPassword, setShowPassword] = useState(false)
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
   const [inputs, setInputs] = useState<inputsType>({
     email: '',
     password: '',
-  });
+  })
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement>
   ) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setInputs({
       ...inputs,
       [name]: value,
-    });
-  };
+    })
+  }
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleClickShowPassword = () => setShowPassword((show) => !show)
 
   const handleMouseDownPassword = (event: any) => {
-    event.preventDefault();
-  };
+    event.preventDefault()
+  }
 
   const handleLoginButtonClick = async (user: inputsType) => {
-    const loggedUser = await dispatch(loginUser({
-      email: user.email,
-      password: user.password,
-    })).unwrap()
-
-    // if(loggedUser.meta.requestStatus === 'fulfilled') {
-    //   loggedUser.payload
-    // }
+    let loggedUser
+    try {
+      loggedUser = await dispatch(loginUser({
+        email: user.email,
+        password: user.password,
+      })).unwrap()
+    } catch (error: any) {
+      return toast.warning(error?.message || errorMessages.unhandled)
+    }
 
     setInputs({
       email: '',
       password: '',
     })
-    
-    loggedUser.token && localStorage.setItem('token', loggedUser.token)
-    navigate('/')
+
+    navigate(routes.root)
   }
 
   return (
     <Container sx={{ marginTop: 10 }}>
-      <Button variant='contained' onClick={() => navigate('/')}>Go Back</Button>
+      <Button variant='contained' onClick={() => navigate(routes.root)}>Go Back</Button>
       <Box
         component="form"
         sx={{
@@ -113,14 +115,14 @@ const LoginPage = () => {
         </Button>
         <Typography sx={{ marginTop: 10 }}>
           Don't have an account?
-          <Link to='/signup'>
+          <Link to={routes.signup}>
             <Button>Sign Up</Button>
           </Link>
         </Typography>
       </Box>
       {/* <ToastContainer /> */}
     </Container>
-  );
-};
+  )
+}
 
-export default LoginPage;
+export default LoginPage

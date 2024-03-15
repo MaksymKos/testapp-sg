@@ -1,9 +1,10 @@
-import { useState, ChangeEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Container, TextField, InputAdornment, Typography, Box, IconButton, Button } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { createUser } from '../api/user/actions';
-import { useAppDispatch } from '../types/hooks';
+import { useState, ChangeEvent } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Container, TextField, InputAdornment, Typography, Box, IconButton, Button } from '@mui/material'
+import { Visibility, VisibilityOff } from '@mui/icons-material'
+import { createUser } from '../api/user/actions'
+import { useAppDispatch } from '../types/hooks'
+import { routes } from '../constants'
 
 type inputsType = {
   name: string,
@@ -13,30 +14,30 @@ type inputsType = {
 }
 
 const SignupPage = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const [showPassword, setShowPassword] = useState(false)
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
   const [inputs, setInputs] = useState<inputsType>({
     name: '',
     surname: '',
     email: '',
     password: '',
-  });
+  })
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement>
   ) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setInputs({
       ...inputs,
       [name]: value,
-    });
-  };
+    })
+  }
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleClickShowPassword = () => setShowPassword((show) => !show)
   const handleMouseDownPassword = (event: any) => {
-    event.preventDefault();
-  };
+    event.preventDefault()
+  }
 
   const handleButtonClick = async (user: inputsType) => {
     await dispatch(createUser(user))
@@ -46,12 +47,12 @@ const SignupPage = () => {
       email: '',
       password: '',
     })
-    navigate('/')
+    navigate(routes.root)
   }
 
   return (
     <Container sx={{ marginTop: 10 }}>
-      <Button variant='contained' onClick={() => navigate('/')}>Go Back</Button>
+      <Button variant='contained' onClick={() => navigate(routes.root)}>Go Back</Button>
       <Box
         component="form"
         sx={{
@@ -122,15 +123,15 @@ const SignupPage = () => {
         >
           Create account
         </Button>
-        <Typography sx={{marginTop: 10}}>
+        <Typography sx={{ marginTop: 10 }}>
           Already have an account?
-          <Link to='/login'>
+          <Link to={routes.login}>
             <Button>Login</Button>
           </Link>
         </Typography>
       </Box>
     </Container>
-  );
-};
+  )
+}
 
-export default SignupPage;
+export default SignupPage

@@ -5,45 +5,31 @@ import { getCityData, getTowns } from '../api/towns/actions'
 import { addTown } from '../api/towns/actions'
 import Town from '../components/Town'
 import { toast } from 'react-toastify'
-
+import { errorMessages } from '../constants'
 
 const HomePage = () => {
-  const [city, setCity] = useState("Kek")
+  const [city, setCity] = useState("")
   const [townsLoading, setTownsLoading] = useState(true)
   const dispatch = useAppDispatch()
-
-  // const {
-  //   weather: { towns },
-  //   user: { user },
-  // } = useAppSelector((state) => state)
-
   const user = useAppSelector((state) => state.user.user)
   const towns = useAppSelector((state) => state.weather.towns)
 
-  const fetchData = async () => {
-    return dispatch(
+  const handleCitySearch = async () => {
+    const town = await dispatch(
       getCityData({
         city,
         unit: 'metric',
       })
     ).unwrap()
-  }
-
-  const handleCitySearch = async () => { // TODO remove if possible || specify native event type
-    const { data: town } = await fetchData()
 
     try {
       await dispatch(addTown(town)).unwrap()
     } catch (error: any) {
-      toast.warning(error?.message || "Something went wrong")
+      toast.warning(error?.message || errorMessages.unhandled)
     }
 
-    setCity('') // TODO - НЕРОБЕ ПОШУК
+    setCity('')
   }
-
-  useEffect(() => {
-
-  }, [user])
 
   useEffect(() => {
     dispatch(

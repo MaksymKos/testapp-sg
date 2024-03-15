@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../types/hooks'
 import { getCityData, get5DaysForecast } from '../api/towns/actions'
@@ -8,6 +8,7 @@ import DeviceThermostatTwoToneIcon from '@mui/icons-material/DeviceThermostatTwo
 import WaterDropOutlinedIcon from '@mui/icons-material/WaterDropOutlined'
 import CompressIcon from '@mui/icons-material/Compress'
 import { styled } from '@mui/material/styles'
+import { routes, weatherService } from '../constants'
 
 const DayPaper = styled(Paper)(({ theme }) => ({
   width: 150,
@@ -23,9 +24,8 @@ const DetailsPage = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
-  const coords = location.pathname.split('/').slice(-1)
+  const city = location.pathname.split('/').slice(-1).join()
   const currentDay = new Date().toLocaleDateString()
-
 
   const {
     citySearchData,
@@ -33,18 +33,19 @@ const DetailsPage = () => {
   } = useAppSelector((state) => state.weather)
 
   const fetchData = async () => {
-    const { data } = await dispatch(
+    const unit = checked ? 'imperial' : 'metric';
+    const data = await dispatch(
       getCityData({
-        city: coords[0],
-        unit: checked ? 'imperial' : 'metric',
+        city,
+        unit,
       })
     ).unwrap()
-
+console.log(data)
     dispatch(
       get5DaysForecast({
         lat: data.coord.lat,
         lon: data.coord.lon,
-        unit: checked ? 'imperial' : 'metric',
+        unit,
       })
     )
   }
@@ -53,13 +54,14 @@ const DetailsPage = () => {
     fetchData()
   }, [checked])
 
+  console.log(1, forecastData, 2, citySearchData)
   if (!forecastData || !citySearchData) return null
 
   return (
     <Box
       marginTop={10}
     >
-      <Button variant='contained' onClick={() => navigate('/')}>Go Back</Button>
+      <Button variant='contained' onClick={() => navigate(routes.root)}>Go Back</Button>
       <Container sx={{ marginTop: 5 }}>
         <Box
           display='flex'
@@ -92,7 +94,6 @@ const DetailsPage = () => {
             display='flex'
             flexDirection='column'
             justifyContent='space-between'
-          // alignItems='center'
           >
 
             <Box
@@ -115,7 +116,7 @@ const DetailsPage = () => {
             >
               <div>
                 <img
-                  src={`https://openweathermap.org/img/wn/${citySearchData.weather[0].icon}@2x.png`}
+                  src={`${weatherService.imageBaseUrl}${citySearchData.weather[0].icon}@2x.png`}
                 />
                 <Typography color='primary.main' variant="h6" component="div">
                   {citySearchData.weather[0].description}
@@ -139,7 +140,6 @@ const DetailsPage = () => {
                 </Box>
               </div>
             </Box>
-
           </Box>
 
           <Box border='1px solid' />
@@ -233,7 +233,7 @@ const DetailsPage = () => {
                   </Typography>
                 </Box>
                 <img
-                  src={`https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`}
+                  src={`${weatherService.imageBaseUrl}/${item.weather[0].icon}@2x.png`}
                 />
                 <Typography>
                   {item.main.temp}° / {item.main.feels_like}°

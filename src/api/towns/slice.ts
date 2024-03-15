@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit"
+import { createSlice } from "@reduxjs/toolkit"
 import { get5DaysForecast, getCityData, getTowns, addTown, deleteTown, updateTown } from './actions'
 import { WeatherTown } from '../../types/weatherTown'
 import { ForecastData } from '../../types/forecastData'
@@ -32,7 +32,7 @@ const weatherSlice = createSlice({
         state.citySearchData = null
       })
       .addCase(getCityData.fulfilled, (state, action) => {
-        state.citySearchData = action.payload.data
+        state.citySearchData = action.payload
       })
       // forecast
       .addCase(get5DaysForecast.pending, (state) => {

@@ -5,13 +5,13 @@ import { useAppSelector } from '../types/hooks'
 import { useDispatch } from 'react-redux'
 import { logout } from '../api/user/slice'
 import { resetWeatherSlice } from '../api/towns/slice'
+import { routes } from '../constants'
 
 export default function Header() {
   const user = useAppSelector((state) => state.user.user)
   const dispatch = useDispatch()
 
   const logoutHandle = () => {
-    localStorage.removeItem('token')
     dispatch(logout())
     dispatch(resetWeatherSlice())
   }
@@ -46,12 +46,10 @@ export default function Header() {
               </Button>
             </Typography>
           ) : (
-            <Link to='/signup'>
+            <Link to={routes.signup}>
               <Button variant="contained" color="primary">Sign Up</Button>
             </Link>
-          )
-          }
-
+          )}
         </Toolbar>
       </AppBar>
     </Box>

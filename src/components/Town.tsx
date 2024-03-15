@@ -11,6 +11,7 @@ import AirTwoToneIcon from '@mui/icons-material/AirTwoTone'
 import WaterDropOutlinedIcon from '@mui/icons-material/WaterDropOutlined'
 import CompressIcon from '@mui/icons-material/Compress'
 import { styled } from '@mui/material/styles'
+import { routes } from '../constants'
 
 const TownPaper = styled(Paper)(({ theme }) => ({
   width: 320,
@@ -21,17 +22,14 @@ const TownPaper = styled(Paper)(({ theme }) => ({
 const Town = ({ town }: { town: WeatherTown }) => {
   const dispatch = useAppDispatch()
 
-  const fetchData = async () => {
-    return dispatch(
+  const handleUpdateClick = async () => {
+    const updatedTown = await dispatch(
       getCityData({
         city: town.name,
         unit: 'metric',
       })
     ).unwrap()
-  }
 
-  const handleUpdateClick = async () => {
-    const { data: updatedTown } = await fetchData()
     dispatch(updateTown({
       town: updatedTown,
       ref: town.ref
@@ -129,7 +127,7 @@ const Town = ({ town }: { town: WeatherTown }) => {
             marginTop='20%'
             marginLeft='70%'
           >
-            <Link to={`/details/${town.name}`}>
+            <Link to={routes.details.replace(':name', town.name)}>
               <Button variant='contained'>
                 Details
               </Button>
