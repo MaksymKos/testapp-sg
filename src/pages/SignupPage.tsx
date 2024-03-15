@@ -1,10 +1,12 @@
-import { useState, ChangeEvent } from 'react'
+import React, { useState, ChangeEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Container, TextField, InputAdornment, Typography, Box, IconButton, Button } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { createUser } from '../api/user/actions'
 import { useAppDispatch } from '../types/hooks'
 import { routes } from '../constants'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 
 type inputsType = {
   name: string,
@@ -40,13 +42,18 @@ const SignupPage = () => {
   }
 
   const handleButtonClick = async (user: inputsType) => {
-    await dispatch(createUser(user))
-    setInputs({
-      name: '',
-      surname: '',
-      email: '',
-      password: '',
-    })
+    try {
+      await dispatch(createUser(user))
+      setInputs({
+        name: '',
+        surname: '',
+        email: '',
+        password: '',
+      })
+    } catch (error) {
+      toast.warning('User already exist')
+    }
+    
     navigate(routes.root)
   }
 
@@ -130,6 +137,7 @@ const SignupPage = () => {
           </Link>
         </Typography>
       </Box>
+      <ToastContainer />
     </Container>
   )
 }

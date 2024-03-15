@@ -1,4 +1,3 @@
-
 export const weatherService = {
   api: {
     baseUrl: "https://api.openweathermap.org",
